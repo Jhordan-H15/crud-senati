@@ -4,7 +4,9 @@
  */
 package javaapplication22;
 import java.sql.*;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 /**
  *
  * @author Alumno-ETI
@@ -51,9 +53,7 @@ public class Usuarios extends javax.swing.JFrame {
             }catch (SQLException e){
                     System.out.println(e);
                     }
-        
-        
-        
+    
     }
 
     /**
@@ -74,6 +74,13 @@ public class Usuarios extends javax.swing.JFrame {
         btnSalir = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowFocusListener(new java.awt.event.WindowFocusListener() {
+            public void windowGainedFocus(java.awt.event.WindowEvent evt) {
+                formWindowGainedFocus(evt);
+            }
+            public void windowLostFocus(java.awt.event.WindowEvent evt) {
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Segoe UI Black", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(51, 153, 255));
@@ -96,10 +103,25 @@ public class Usuarios extends javax.swing.JFrame {
         jScrollPane1.setViewportView(tblUsuarios);
 
         btnAgregar.setText("Agregar");
+        btnAgregar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarActionPerformed(evt);
+            }
+        });
 
         btnEditar.setText("Editar");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
 
         btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
 
         btnSalir.setText("Salir");
         btnSalir.addActionListener(new java.awt.event.ActionListener() {
@@ -157,6 +179,55 @@ public class Usuarios extends javax.swing.JFrame {
         // TODO add your handling code here:
         dispose();
     }//GEN-LAST:event_btnSalirActionPerformed
+
+    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
+        // TODO add your handling code here:
+        AgregarUsuario formAdd = new AgregarUsuario();
+        formAdd.setVisible(true);  
+    }//GEN-LAST:event_btnAgregarActionPerformed
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        // TODO add your handling code here:
+        TableModel modelo = tblUsuarios.getModel();
+        
+        String id = modelo.getValueAt(tblUsuarios.getSelectedRow(), 0).toString();
+        String name = modelo.getValueAt(tblUsuarios.getSelectedRow(), 1).toString();
+        String lastname = modelo.getValueAt(tblUsuarios.getSelectedRow(), 2).toString();
+        
+        EditarUsuario formAdd = new EditarUsuario(id, name, lastname);
+        formAdd.setVisible(true);
+    }//GEN-LAST:event_btnEditarActionPerformed
+
+    private void formWindowGainedFocus(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowGainedFocus
+        // TODO add your handling code here:
+        System.out.println("ganied");
+        cargarUsuarios();
+    }//GEN-LAST:event_formWindowGainedFocus
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        // TODO add your handling code here:
+        if(tblUsuarios.getSelectedRow() > -1){
+            int option = JOptionPane.showConfirmDialog(null, "¿Estás seguro eliminar?", "Eliminar", JOptionPane.DEFAULT_OPTION);
+            if (option == 0){
+        
+               TableModel modelo = tblUsuarios.getModel();
+               Conexion cn = new Conexion();
+               String id = modelo.getValueAt(tblUsuarios.getSelectedRow(), 0).toString();
+               String query = "DELETE FROM Usuario WHERE id = ?";
+        
+               try {
+                    PreparedStatement ps = cn.conectar().prepareStatement(query);
+                    ps.setInt(1, Integer.parseInt(id));   
+                    ps.execute();
+                
+                } catch (SQLException e){
+                    System.out.println(e);     
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Hey, selecciona un registro");
+        }
+    }//GEN-LAST:event_btnEliminarActionPerformed
 
     /**
      * @param args the command line arguments
